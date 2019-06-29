@@ -114,9 +114,11 @@ def test_chart_data():
     import random
     his = []
     the_time = arrow.now().timestamp
-    for i in range(1000):
-        his.append({"time":the_time-i*10,"price":random.random()-0.5})
-    return {"his":his}
+    for i in range(500):
+        his.append({"time":the_time+i*10,"price":random.random()-0.5})
+    for i in range(500):
+        his.append({"time":the_time+i*10+60*60*4,"price":random.random()-0.5})
+    return {"his":his,"quote":{"per":"5.55%","name":"KOKO"}}
 
 class chart:
     def POST(self):
@@ -265,19 +267,56 @@ def parse_sina_text(datas,text):
         if d is not None:
             datas.append(d)
 
+def save_key_if_new(now,k,d):
+    rc = web.all_data.get(k, {})
+    if (now - rc.get('last', 0)) > 10:
+        rc['last'] = now
+        his = rc.get('his', [])
+        his.append(d)
+        rc['his'] = his
+        rc['quote'] = d
+    web.all_data[k] = rc
+
+def save_key_and_pop_old(now,k,d):
+    rc = web.all_data.get(k, {})
+    if (now - rc.get('last', 0)) > 10:
+        rc['last'] = now
+        his = rc.get('his', [])
+        his.append(d)
+        if (d['time']-his[0]['time'])>24*60*60:
+            his.pop(0)
+        rc['his'] = his
+        rc['quote'] = d
+        web.all_data[k] = rc
+
+def between_day_time(an,h1,m1,h2,m2):
+    # print("is %s between %d:%d - %d:%d" % (str(an),h1,m1,h2,m2))
+    h = an.hour
+    m = an.minute
+    if h<h1 or h>h2:
+        return False
+    elif h==h2 and m>m2:
+        return False
+    elif h==h1 and m<m1:
+        return False
+    return True
+
 def save_today_his(datas):
-    now = time.time()
+    an = arrow.now()
+    now = an.timestamp
+    is_a_clean_time = between_day_time(an,9,25,9,29)
+    is_a_open = between_day_time(an,9,30,11,30) or between_day_time(an,13,0,15,0)
     for d in datas:
         d['time'] = now
         k = d['key']
-        rc = web.all_data.get(k,{})
-        if (now - rc.get('last',0))>10:
-            rc['last'] = now
-            his = rc.get('his',[])
-            his.append(d)
-            rc['his'] = his
-            rc['quote'] = d
-        web.all_data[k] = rc
+        id, m = id_market_from_key(k)
+        if m=="a":
+            if is_a_clean_time:
+                pass
+            elif is_a_open:
+                save_key_if_new(now,k,d)
+        else:
+            save_key_and_pop_old(now,k,d)
 
 #sh=上证指数 sz=深圳成指 hs300=沪深300指数 sz50=上证50 zxb=中小板 cyb=创业板
 class index:
@@ -293,7 +332,7 @@ class index:
         # ret['warning'] = "免费版目前只支持一只股票"
         newversion = '''
         new version <a onclick="cm.open_url(\'http://www.baidu.com\');" href="#">DD</a>.
-        忽略消息请<a onclick="$(\'#warnalert\').remove();" href="#">关闭</a>
+        忽略消息请<a onclick="$(\'#warnalert\').remove();ret_window_height();" href="#">关闭</a>
         '''
         ret['warning'] = newversion
         # print(ret)
