@@ -21,27 +21,30 @@ def id_market_from_key(key):
     m = pair[1]
     return id,m
 
-def get_one_from(one,it):
+def get_one_from(m,one,it):
     ret = {}
     ret['key'] = one
 
     ret['name'] = it['name']
     ret['code'] = it['code']
 
-    if it['price']<1:
+    if it['price']<1 or m=="fx":
         ret['price'] = "%.4f" % (it['price'])
     else:
         ret['price'] = "%.2f" % (it['price'])
+    ret['price_v'] = it['price']
 
-    if it['pre_close']<1:
+    if it['pre_close']<1 or m=="fx":
         ret['pre_close'] = "%.4f" % (it['pre_close'])
     else:
         ret['pre_close'] = "%.2f" % (it['pre_close'])
+    ret['pre_close_v'] = it['pre_close']
 
-    if it['open']<1:
+    if it['open']<1 or m=="fx":
         ret['open'] = "%.4f" % (it['open'])
     else:
         ret['open'] = "%.2f" % (it['open'])
+    ret['open_v'] = it['open']
 
     if 'volume' in it:
         vol = float(it['volume'])/10000
@@ -50,6 +53,9 @@ def get_one_from(one,it):
         else:
             vol = "%.1f亿" % (vol/10000)
         ret['volume'] = vol
+        ret['volume_v'] = float(it['volume'])
+    else:
+        ret['volume_v'] = 0
 
     if "amount" in it:
         amt = float(it['amount'])/10000
@@ -58,10 +64,15 @@ def get_one_from(one,it):
         else:
             amt = "%.1f亿" % (amt/10000)
         ret['amount'] = amt
+        ret['amount_v'] = float(it['amount'])
+    else:
+        ret['amount_v'] = 0
 
     prc = float(ret['price'])
     pcl = float(it['pre_close'])
-    ret['per'] = "%.2f%%" % ((prc-pcl)/pcl*100)
+    per_v = (prc-pcl)/pcl*100
+    ret['per'] = "%.2f%%" % (per_v)
+    ret['per_v'] = per_v
     return ret
 
 def parse_sina_sug(m,text):
@@ -176,7 +187,7 @@ def parse_hk(l):
     stock['name'] = name
     stock['key'] = key
     stock['mkt'] = "hk"
-    return get_one_from(key,stock)
+    return get_one_from('hk',key,stock)
 
 def parse_sina_a(l):
     left = l.split('hq_str_')[1].split("=\"")
@@ -189,6 +200,8 @@ def parse_sina_a(l):
     prc = left[3]
     op = left[1]
     pc = left[2]
+    if prc=="0.000":
+        prc = pc
     name = left[0]
     key = code+"@a"
     stock = {}
@@ -201,7 +214,7 @@ def parse_sina_a(l):
     stock['name'] = name
     stock['key'] = key
     stock['mkt'] = "a"
-    return get_one_from(key,stock)
+    return get_one_from('a',key,stock)
 
 #var hq_str_fx_susdcny="23:29:00,6.8671,6.8668,6.8771,257,6.8749,6.8817,6.856,6.8668,在岸人民币,-0.18,-0.0121,0.003738,Cougar Capital Management. New York,6.9762,6.5979,*+-++--+,2019-06-28";
 def parse_fx(l):
@@ -223,7 +236,7 @@ def parse_fx(l):
     stock['name'] = name
     stock['key'] = key
     stock['mkt'] = "fx"
-    return get_one_from(key,stock)
+    return get_one_from('fx',key,stock)
 
 #var hq_str_btc_btcbtcusd="01:10:34,0.0000,0.0000,11906.7000,0,11906.7000,12174.3000,10970.5000,11897.3000,比特币美元(BTC/USD),1260000.0000,2019-06-29";
 def parse_cc(l):
@@ -250,7 +263,7 @@ def parse_cc(l):
     stock['name'] = name
     stock['key'] = key
     stock['mkt'] = "cc"
-    return get_one_from(key,stock)
+    return get_one_from('cc',key,stock)
 
 def parse_sina_text(datas,text):
     lines = text.split("\n")
@@ -307,19 +320,36 @@ def between_day_time(an,h1,m1,h2,m2):
 def save_today_his(datas):
     an = arrow.now()
     now = an.timestamp
-    is_a_clean_time = between_day_time(an,9,25,9,29)
-    is_a_open = between_day_time(an,9,30,11,30) or between_day_time(an,13,0,15,0)
     for d in datas:
         d['time'] = now
         k = d['key']
         id, m = id_market_from_key(k)
         if m=="a":
-            if is_a_clean_time:
+            is_a_clean_time = between_day_time(an, 9, 25, 9, 29)
+            is_a_open = between_day_time(an, 9, 30, 11, 30) or between_day_time(an, 13, 0, 15, 0)
+            if is_a_clean_time and k in web.all_data:
                 del web.all_data[k]
             elif is_a_open:
                 save_key_if_new(now,k,d)
+        elif m=="hk":
+            is_clean_time = between_day_time(an, 9, 25, 9, 29)
+            is_open = between_day_time(an,9,30,12,0) or between_day_time(an,13,0,16,0)
+            if is_clean_time and k in web.all_data:
+                del web.all_data[k]
+            elif is_open:
+                save_key_if_new(now, k, d)
         else:
             save_key_and_pop_old(now,k,d)
+
+def sort_ret(ret,sort):
+    if sort!="":
+        tks = sort.split("#")
+        dts = ret['datas']
+        k = tks[0] + "_v"
+        od = tks[1]
+        s_dts = sorted(dts,key=lambda x:x[k],reverse=(od=="desc"))
+        ret['datas'] = s_dts
+    ret['sort'] = sort
 
 class index:
     def POST(self):
@@ -339,6 +369,7 @@ class index:
         ret['warning'] = newversion
         # print(ret)
         save_today_his(datas)
+        sort_ret(ret,psd.get('sort',''))
         return json.dumps(ret)
 
 if __name__ == "__main__":
