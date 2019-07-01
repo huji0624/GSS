@@ -356,6 +356,7 @@ class index:
         data = web.data()
         psd = json.loads(data.decode("utf-8"))
         # logging.info("post:"+str(psd))
+        logging.info(web.ctx.env['HTTP_USER_AGENT'])
         text = psd['t']
         ret = {}
         datas=[]
