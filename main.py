@@ -108,7 +108,7 @@ class update:
         if len(ret)>0:
             return json.dumps(ret[-1])
         else:
-            return json.dumps({"err":"no data"})
+            return json.dumps({"err":0})
 
 def test_chart_data():
     import random
@@ -127,7 +127,10 @@ class chart:
         key = user_data['key']
         # if key == "sh600336@a":
         #     return json.dumps(test_chart_data())
-        ret = web.all_data.get(key,{})
+        if key in web.all_data:
+            ret = web.all_data[key]
+        else:
+            ret = {'quote':{'per':"0.00%",'name':key},'hist':[]}
         return json.dumps(ret)
 
 class sug:
@@ -312,13 +315,12 @@ def save_today_his(datas):
         id, m = id_market_from_key(k)
         if m=="a":
             if is_a_clean_time:
-                pass
+                del web.all_data[k]
             elif is_a_open:
                 save_key_if_new(now,k,d)
         else:
             save_key_and_pop_old(now,k,d)
 
-#sh=上证指数 sz=深圳成指 hs300=沪深300指数 sz50=上证50 zxb=中小板 cyb=创业板
 class index:
     def POST(self):
         data = web.data()
