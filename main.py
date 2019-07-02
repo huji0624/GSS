@@ -355,7 +355,8 @@ class index:
     def POST(self):
         data = web.data()
         psd = json.loads(data.decode("utf-8"))
-        # logging.info("post:"+str(psd))
+        #logging.info("post:"+str(psd))
+        logging.info("uuid:"+psd['uuid'])
         logging.info(web.ctx.env['HTTP_USER_AGENT'])
         text = psd['t']
         ret = {}
@@ -364,10 +365,11 @@ class index:
         ret['datas'] = datas
         # ret['warning'] = "免费版目前只支持一只股票"
         newversion = '''
-        new version <a onclick="cm.open_url(\'http://www.baidu.com\');" href="#">DD</a>.
-        忽略消息请<a onclick="$(\'#warnalert\').remove();ret_window_height();" href="#">关闭</a>
+        新版本v1.0.1发布.<a onclick="cm.open_url(\'https://luckyhu.top/gs\');" href="#">去下载</a>或
+        <a onclick="$(\'#warnalert\').remove();ret_window_height();" href="#">忽略</a>
         '''
-        ret['warning'] = newversion
+	if psd['v']!="1.0.1":
+            ret['warning'] = newversion
         # print(ret)
         save_today_his(datas)
         sort_ret(ret,psd.get('sort',''))
