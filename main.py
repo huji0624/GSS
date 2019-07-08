@@ -68,6 +68,23 @@ def get_one_from(m,one,it):
     else:
         ret['amount_v'] = 0
 
+    if "ltg" in it:
+        ltg = ret['volume_v']/(float(it['ltg'])*100)
+        ret['swap'] = "%.2f%%" % (ltg)
+        ret['swap_v'] = ltg
+    else:
+        ret['swap_v'] = 0
+
+    if "ba0" in it:
+        ba = float(it['ba0'])+float(it['ba1'])+float(it['ba2'])+float(it['ba3'])+float(it['ba4'])
+        sa = float(it['sa0'])+float(it['sa1'])+float(it['sa2'])+float(it['sa3'])+float(it['sa4'])
+        print(one)
+        abr_v = (ba-sa)/(ba+sa)
+        ret['abr_v'] = abr_v
+        ret['abr'] = "%.2f%%" % (abr_v*100)
+    else:
+        ret['abr_v'] = 0
+
     prc = float(ret['price'])
     pcl = float(it['pre_close'])
     per_v = (prc-pcl)/pcl*100
@@ -189,22 +206,47 @@ def parse_hk(l):
     stock['mkt'] = "hk"
     return get_one_from('hk',key,stock)
 
-def parse_sina_a(l):
+def parse_sina_a(l,base_info):
+    stock = {}
     left = l.split('hq_str_')[1].split("=\"")
     if left[0]=="?":
         return None
     code = left[0]
     left = left[1].split(",")
+    print(left)
     vol = left[8]
     amt = left[9]
     prc = left[3]
     op = left[1]
     pc = left[2]
+    ba0 = left[10]
+    if ba0=="0":
+        pass
+    else:
+        stock['ba0'] = left[10]
+        stock['bp0'] = left[11]
+        stock['ba1'] = left[12]
+        stock['bp1'] = left[13]
+        stock['ba2'] = left[14]
+        stock['bp2'] = left[15]
+        stock['ba3'] = left[16]
+        stock['bp3'] = left[17]
+        stock['ba4'] = left[18]
+        stock['bp4'] = left[19]
+        stock['sa0'] = left[20]
+        stock['sp0'] = left[21]
+        stock['sa1'] = left[22]
+        stock['sp1'] = left[23]
+        stock['sa2'] = left[24]
+        stock['sp2'] = left[25]
+        stock['sa3'] = left[26]
+        stock['sp3'] = left[27]
+        stock['sa4'] = left[28]
+        stock['sp4'] = left[29]
     if prc=="0.000":
         prc = pc
     name = left[0]
     key = code+"@a"
-    stock = {}
     stock['code'] = code
     stock['volume'] = vol
     stock['amount'] = amt
@@ -214,6 +256,12 @@ def parse_sina_a(l):
     stock['name'] = name
     stock['key'] = key
     stock['mkt'] = "a"
+
+    if code==base_info['code']:
+        stock.update(base_info)
+    else:
+        logging.err("wrong code:"+code)
+
     return get_one_from('a',key,stock)
 
 #var hq_str_fx_susdcny="23:29:00,6.8671,6.8668,6.8771,257,6.8749,6.8817,6.856,6.8668,在岸人民币,-0.18,-0.0121,0.003738,Cougar Capital Management. New York,6.9762,6.5979,*+-++--+,2019-06-28";
@@ -265,9 +313,24 @@ def parse_cc(l):
     stock['mkt'] = "cc"
     return get_one_from('cc',key,stock)
 
+def parse_sina_a_i(l):
+    base_info = {}
+    l = l.split("hq_str_")[1]
+    tks = l.split("_i=\"")
+    code = tks[0].strip()
+    l = tks[1]
+    tks = l[:-2].split(",")
+    # logging.info(tks)
+    ltg = tks[8].strip()
+    if ltg!="":
+        base_info['ltg']=ltg
+    base_info['code']=code
+    return base_info
+
 def parse_sina_text(datas,text):
     lines = text.split("\n")
     # logging.info(lines)
+    base_info = {}
     for l in lines:
         if len(l.strip())==0:
             continue
@@ -279,9 +342,13 @@ def parse_sina_text(datas,text):
         elif "hq_str_btc" in l:
             d = parse_cc(l)
         else:
-            d = parse_sina_a(l)
+            if "_i=" in l:
+                base_info = parse_sina_a_i(l)
+            else:
+                d = parse_sina_a(l,base_info)
         if d is not None:
             datas.append(d)
+        last_d = d
 
 def save_key_if_new(now,k,d):
     rc = web.all_data.get(k, {})
