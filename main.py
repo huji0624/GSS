@@ -78,7 +78,6 @@ def get_one_from(m,one,it):
     if "ba0" in it:
         ba = float(it['ba0'])+float(it['ba1'])+float(it['ba2'])+float(it['ba3'])+float(it['ba4'])
         sa = float(it['sa0'])+float(it['sa1'])+float(it['sa2'])+float(it['sa3'])+float(it['sa4'])
-        print(one)
         abr_v = (ba-sa)/(ba+sa)
         ret['abr_v'] = abr_v
         ret['abr'] = "%.2f%%" % (abr_v*100)
@@ -213,7 +212,6 @@ def parse_sina_a(l,base_info):
         return None
     code = left[0]
     left = left[1].split(",")
-    print(left)
     vol = left[8]
     amt = left[9]
     prc = left[3]
@@ -350,10 +348,11 @@ def parse_sina_text(datas,text):
             datas.append(d)
         last_d = d
 
-def save_key_if_new(now,k,d):
+def save_key_if_new(an,now,k,d):
     rc = web.all_data.get(k, {})
     if (now - rc.get('last', 0)) > 10:
         rc['last'] = now
+        rc['date'] = str(an.date())
         his = rc.get('his', [])
         his.append(d)
         rc['his'] = his
@@ -392,19 +391,18 @@ def save_today_his(datas):
         k = d['key']
         id, m = id_market_from_key(k)
         if m=="a":
-            is_a_clean_time = between_day_time(an, 9, 25, 9, 29)
             is_a_open = between_day_time(an, 9, 30, 11, 30) or between_day_time(an, 13, 0, 15, 0)
-            if is_a_clean_time and k in web.all_data:
+            if k in web.all_data and web.all_data[k]['date'] != str(an.date()):
                 del web.all_data[k]
             elif is_a_open:
-                save_key_if_new(now,k,d)
+                save_key_if_new(an,now,k,d)
         elif m=="hk":
             is_clean_time = between_day_time(an, 9, 25, 9, 29)
             is_open = between_day_time(an,9,30,12,0) or between_day_time(an,13,0,16,0)
             if is_clean_time and k in web.all_data:
                 del web.all_data[k]
             elif is_open:
-                save_key_if_new(now, k, d)
+                save_key_if_new(an,now, k, d)
         else:
             save_key_and_pop_old(now,k,d)
 
