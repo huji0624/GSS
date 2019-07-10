@@ -339,7 +339,8 @@ def parse_sina_nf(l):
     obj['open'] = float(tks[2])
     obj['high'] = float(tks[3])
     obj['low'] = float(tks[4])
-    obj['price'] = float(tks[5])
+    #[5]jie suan jia
+    obj['price'] = float(tks[8])
     obj['bp0'] = tks[6]
     obj['sp0'] = tks[7]
     obj['pre_close'] = float(tks[10])
