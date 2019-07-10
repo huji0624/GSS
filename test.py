@@ -1,9 +1,5 @@
-d = {}
+import arrow
 
-d['k'] = 0
-d['l'] = 1
+an = arrow.now()
 
-del d['k']
-
-for k in d:
-    print(k)
+print(an)

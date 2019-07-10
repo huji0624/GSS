@@ -6,7 +6,17 @@ import json
 import requests
 import arrow
 import logging
-logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',level=logging.DEBUG)
+import os
+
+if not os.path.isdir("./log"):
+    os.mkdir("./log")
+
+fn = str(arrow.now())
+fn = fn.replace(":","_")
+logging.basicConfig(filemode='w',
+                    filename='./log/'+fn+".log",
+                    format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
+                    level=logging.DEBUG)
 
 urls = (
     '/', 'index',
