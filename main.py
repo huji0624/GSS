@@ -325,6 +325,27 @@ def parse_sina_a_i(l):
     base_info['code']=code
     return base_info
 
+def parse_sina_nf(l):
+    obj = {}
+    l = l.split("hq_str_nf_")[1]
+    tks = l.split("=\"")
+    code = tks[0].strip()
+    key = code + "@nf"
+    l = tks[1].strip()
+    tks = l.split(",")
+    obj['name'] = tks[0]
+    obj['code'] = code
+    obj['key'] = key
+    obj['open'] = float(tks[2])
+    obj['high'] = float(tks[3])
+    obj['low'] = float(tks[4])
+    obj['price'] = float(tks[5])
+    obj['bp0'] = tks[6]
+    obj['sp0'] = tks[7]
+    obj['pre_close'] = float(tks[10])
+    obj['volume'] = tks[14]
+    return get_one_from('nf', key, obj)
+
 def parse_sina_text(datas,text):
     lines = text.split("\n")
     # logging.info(lines)
@@ -339,11 +360,13 @@ def parse_sina_text(datas,text):
             d = parse_fx(l)
         elif "hq_str_btc" in l:
             d = parse_cc(l)
+        elif "hq_str_nf" in l:
+            d = parse_sina_nf(l)
         else:
             if "_i=" in l:
                 base_info = parse_sina_a_i(l)
             else:
-                d = parse_sina_a(l,base_info)
+                d = parse_sina_a(l, base_info)
         if d is not None:
             datas.append(d)
         last_d = d
@@ -385,6 +408,10 @@ def save_today_his(datas):
                 save_key_and_pop_old(now,k,d)
         elif m=="hk":
             is_open = between_day_time(an,9,30,12,0) or between_day_time(an,13,0,16,0)
+            if is_open:
+                save_key_and_pop_old(now, k, d)
+        elif m=="nf":
+            is_open = between_day_time(an,9,00,11,30) or between_day_time(an,13,30,15,0) or between_day_time(an,21,00,23,30)
             if is_open:
                 save_key_and_pop_old(now, k, d)
         else:
