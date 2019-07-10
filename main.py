@@ -348,17 +348,6 @@ def parse_sina_text(datas,text):
             datas.append(d)
         last_d = d
 
-def save_key_if_new(an,now,k,d):
-    rc = web.all_data.get(k, {})
-    if (now - rc.get('last', 0)) > 10:
-        rc['last'] = now
-        rc['date'] = str(an.date())
-        his = rc.get('his', [])
-        his.append(d)
-        rc['his'] = his
-        rc['quote'] = d
-    web.all_data[k] = rc
-
 def save_key_and_pop_old(now,k,d):
     rc = web.all_data.get(k, {})
     if (now - rc.get('last', 0)) > 10:
@@ -392,17 +381,12 @@ def save_today_his(datas):
         id, m = id_market_from_key(k)
         if m=="a":
             is_a_open = between_day_time(an, 9, 30, 11, 30) or between_day_time(an, 13, 0, 15, 0)
-            if k in web.all_data and web.all_data[k]['date'] != str(an.date()):
-                del web.all_data[k]
-            elif is_a_open:
-                save_key_if_new(an,now,k,d)
+            if is_a_open:
+                save_key_and_pop_old(now,k,d)
         elif m=="hk":
-            is_clean_time = between_day_time(an, 9, 25, 9, 29)
             is_open = between_day_time(an,9,30,12,0) or between_day_time(an,13,0,16,0)
-            if is_clean_time and k in web.all_data:
-                del web.all_data[k]
-            elif is_open:
-                save_key_if_new(an,now, k, d)
+            if is_open:
+                save_key_and_pop_old(now, k, d)
         else:
             save_key_and_pop_old(now,k,d)
 
