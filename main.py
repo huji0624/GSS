@@ -264,11 +264,10 @@ def parse_sina_a(l,base_info):
     stock['name'] = name
     stock['key'] = key
     stock['mkt'] = "a"
-
-    if code==base_info['code']:
+    if code==base_info.get('code',code):
         stock.update(base_info)
     else:
-        logging.err("wrong code:"+code)
+        logging.error("wrong code:"+code)
 
     return get_one_from('a',key,stock)
 
