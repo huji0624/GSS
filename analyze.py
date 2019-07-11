@@ -24,8 +24,8 @@ def un_tar(file_name):
 
 day_data = {}
 
-dn = un_tar("archive.tgz")
-tfile = dn+"/web.log"
+import sys
+tfile = sys.argv[1]
 with open(tfile,"r") as f:
     t = f.read()
     lines = t.split("\n")
