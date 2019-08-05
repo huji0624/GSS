@@ -444,6 +444,7 @@ class index:
         #logging.info("post:"+str(psd))
         logging.info("uuid:"+psd['uuid'])
         logging.info(web.ctx.env['HTTP_USER_AGENT'])
+	logging.info("ip:"+web.ctx.ip)
         text = psd['t']
         ret = {}
         datas=[]
@@ -454,7 +455,7 @@ class index:
         新版本v1.0.2发布.<a onclick="cm.open_url(\'https://luckyhu.top/gs\');" href="#">去下载</a>或
         <a onclick="$(\'#warnalert\').remove();ret_window_height();" href="#">忽略</a>
         '''
-	if psd['v']!="1.0.2":
+        if psd['v']!="1.0.3":
             ret['warning'] = newversion
         # print(ret)
         save_today_his(datas)
