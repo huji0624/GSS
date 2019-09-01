@@ -7,6 +7,32 @@ import requests
 import arrow
 import logging
 import os
+import base64
+from urllib import unquote
+from urllib import quote
+
+class BaseRoute:
+    def _POST(self,psd):
+        raise Exception("_POST must implement.")
+
+    def POST(self):
+        data = web.data()
+        psd = json.loads(data.decode("utf-8"))
+        data = None
+        if 'en' in psd:
+            s = psd['en']
+            s = base64.b64decode(s)
+            s = unquote(s)
+            data = json.loads(s)
+            ret = self._POST(data)
+            en = quote(ret)
+            en = base64.b64encode(en)
+            rd = {}
+            rd['en'] = en
+            return json.dumps(rd)
+        else:
+            data = psd
+            return self._POST(data)
 
 if not os.path.isdir("./log"):
     os.mkdir("./log")
@@ -135,10 +161,8 @@ def parse_sina_sug(m,text):
             logging.warning("code not right..."+line)
     return sugs
 
-class update:
-    def POST(self):
-        data = web.data()
-        user_data = json.loads(data.decode("utf-8"))
+class update(BaseRoute):
+    def _POST(self,user_data):
         key = user_data['key']
         ret = web.all_data.get(key,{})
         ret = ret.get('his',[])
@@ -157,10 +181,8 @@ def test_chart_data():
         his.append({"time":the_time+i*10+60*60*4,"price":random.random()-0.5})
     return {"his":his,"quote":{"per":"5.55%","name":"KOKO"}}
 
-class chart:
-    def POST(self):
-        data = web.data()
-        user_data = json.loads(data.decode("utf-8"))
+class chart(BaseRoute):
+    def _POST(self,user_data):
         key = user_data['key']
         # if key == "sh600336@a":
         #     return json.dumps(test_chart_data())
@@ -437,14 +459,15 @@ def sort_ret(ret,sort):
         ret['datas'] = s_dts
     ret['sort'] = sort
 
-class index:
-    def POST(self):
-        data = web.data()
-        psd = json.loads(data.decode("utf-8"))
+
+class index(BaseRoute):
+    def _POST(self,psd):
+        # data = web.data()
+        # psd = json.loads(data.decode("utf-8"))
         #logging.info("post:"+str(psd))
         logging.info("uuid:"+psd['uuid'])
         logging.info(web.ctx.env['HTTP_USER_AGENT'])
-	logging.info("ip:"+web.ctx.ip)
+        logging.info("ip:"+web.ctx.ip)
         text = psd['t']
         ret = {}
         datas=[]
@@ -461,6 +484,8 @@ class index:
         save_today_his(datas)
         sort_ret(ret,psd.get('sort',''))
         return json.dumps(ret)
+
+
 
 if __name__ == "__main__":
     web.all_data = {}
