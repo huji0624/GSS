@@ -492,6 +492,7 @@ class index(BaseRoute):
 
 
 if __name__ == "__main__":
+    print(os.getpid())
     web.all_data = {}
     app = web.application(urls, globals())
     app.run()

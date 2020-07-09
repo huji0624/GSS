@@ -1,1 +1,1 @@
-ssh huji@47.100.235.205 "ll;"
+ssh huji@47.100.235.205 "cd GSS;git pull;kill `head http.log -n 1`;nohup python main.py > http.log 2>&1 &"
