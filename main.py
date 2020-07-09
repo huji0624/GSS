@@ -493,7 +493,7 @@ class index(BaseRoute):
 
 if __name__ == "__main__":
     pid = (os.getpid())
-    os.system("cat %d > pid.log" % pid)
+    os.system("echo %d > pid.log" % pid)
     web.all_data = {}
     app = web.application(urls, globals())
     app.run()
