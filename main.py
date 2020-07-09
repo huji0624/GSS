@@ -105,9 +105,13 @@ def get_one_from(m,one,it):
         ret['amount_v'] = 0
 
     if "ltg" in it:
-        ltg = ret['volume_v']/(float(it['ltg'])*100)
-        ret['swap'] = "%.2f%%" % (ltg)
-        ret['swap_v'] = ltg
+        ltg_v = float(it['ltg'])*100
+        if ltg_v>0:
+            ltg = ret['volume_v']/ltg_v
+            ret['swap'] = "%.2f%%" % (ltg)
+            ret['swap_v'] = ltg
+        else:
+            ret['swap_v'] = 0
     else:
         ret['swap_v'] = 0
 
