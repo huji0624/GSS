@@ -10,6 +10,7 @@ import os
 import base64
 from urllib import unquote
 from urllib import quote
+from logging.handlers import TimedRotatingFileHandler
 
 class BaseRoute:
     def _POST(self,psd):
@@ -39,10 +40,13 @@ if not os.path.isdir("./log"):
 
 fn = str(arrow.now())
 fn = fn.replace(":","_")
-logging.basicConfig(filemode='w',
-                    filename='./log/'+fn+".log",
-                    format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
-                    level=logging.DEBUG)
+log_file_handler = TimedRotatingFileHandler(filename="req", when="D", interval=7, backupCount=365)
+log_file_handler.suffix = "%Y-%m-%d_%H-%M.log"
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
+log_file_handler.setFormatter(formatter)
+logger.addHandler(log_file_handler)
 
 urls = (
     '/', 'index',
@@ -162,7 +166,7 @@ def parse_sina_sug(m,text):
             sug['key'] = code+"@hk"
             sugs.append(sug)
         else:
-            logging.warning("code not right..."+line)
+            logger.warning("code not right..."+line)
     return sugs
 
 class update(BaseRoute):
@@ -206,7 +210,7 @@ class sug:
             return {"message":"no input"}
         id,m = id_market_from_key(key)
         if m == "a" or m=="hk":
-            logging.info("get sug : " + id)
+            logger.info("get sug : " + id)
             sina_key = id
             now = int(1000*time.time())
             url = "https://suggest3.sinajs.cn/suggest/type=&key=%s&name=suggestdata_%d" % (sina_key,now)
@@ -293,7 +297,7 @@ def parse_sina_a(l,base_info):
     if code==base_info.get('code',code):
         stock.update(base_info)
     else:
-        logging.error("wrong code:"+code)
+        logger.error("wrong code:"+code)
 
     return get_one_from('a',key,stock)
 
@@ -353,7 +357,6 @@ def parse_sina_a_i(l):
     code = tks[0].strip()
     l = tks[1]
     tks = l[:-2].split(",")
-    # logging.info(tks)
     ltg = tks[8].strip()
     if ltg!="":
         base_info['ltg']=ltg
@@ -384,7 +387,6 @@ def parse_sina_nf(l):
 
 def parse_sina_text(datas,text):
     lines = text.split("\n")
-    # logging.info(lines)
     base_info = {}
     for l in lines:
         if len(l.strip())==0:
@@ -468,10 +470,11 @@ class index(BaseRoute):
     def _POST(self,psd):
         # data = web.data()
         # psd = json.loads(data.decode("utf-8"))
-        #logging.info("post:"+str(psd))
-        logging.info("uuid:"+psd['uuid'])
-        logging.info(web.ctx.env['HTTP_USER_AGENT'])
-        logging.info("ip:"+web.ctx.ip)
+        li = {}
+        li['uuid'] = psd['uuid']
+        li['UA'] = web.ctx.env['HTTP_USER_AGENT']
+        li['ip'] = web.ctx.ip
+        logger.info(li)
         text = psd['t']
         ret = {}
         datas=[]
@@ -479,10 +482,10 @@ class index(BaseRoute):
         ret['datas'] = datas
         # ret['warning'] = "免费版目前只支持一只股票"
         newversion = '''
-        新版本v1.0.2发布.<a onclick="cm.open_url(\'https://luckyhu.top/gs\');" href="#">去下载</a>或
+        新版本v1.0.4发布.<a onclick="cm.open_url(\'https://luckyhu.top/gs\');" href="#">去下载</a>或
         <a onclick="$(\'#warnalert\').remove();ret_window_height();" href="#">忽略</a>
         '''
-        if psd['v']!="1.0.3":
+        if psd['v']!="1.0.4":
             ret['warning'] = newversion
         # print(ret)
         save_today_his(datas)
