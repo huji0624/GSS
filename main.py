@@ -40,7 +40,7 @@ if not os.path.isdir("./log"):
 
 fn = str(arrow.now())
 fn = fn.replace(":","_")
-log_file_handler = TimedRotatingFileHandler(filename="req", when="D", interval=7, backupCount=365)
+log_file_handler = TimedRotatingFileHandler(filename="./log/request.log", when="D", interval=7, backupCount=365)
 log_file_handler.suffix = "%Y-%m-%d_%H-%M.log"
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
