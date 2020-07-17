@@ -42,7 +42,7 @@ fn = str(arrow.now())
 fn = fn.replace(":","_")
 log_file_handler = TimedRotatingFileHandler(filename="./log/request.log", when="D", interval=7, backupCount=365)
 log_file_handler.suffix = "%Y-%m-%d_%H-%M.log"
-logger = logging.getLogger()
+logger = logging.getLogger("request")
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
 log_file_handler.setFormatter(formatter)
