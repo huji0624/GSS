@@ -8,8 +8,8 @@ def notify_msg(msg):
     req = {}
     req['msgtype'] = "text"
     cont = {}
-    cont['text'] = msg
-    req['content'] = cont
+    cont['content'] = msg
+    req['text'] = cont
     import json
     headers = {"content-type":"application/json;charset=utf-8"}
     r = requests.post(dd,data=json.dumps(req),headers=headers)
