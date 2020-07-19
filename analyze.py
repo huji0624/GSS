@@ -25,14 +25,16 @@ def un_tar(file_name):
 day_data = {}
 
 import sys
+import json
 tfile = sys.argv[1]
 with open(tfile,"r") as f:
     t = f.read()
     lines = t.split("\n")
     for l in lines:
-        if "INFO" in l:
+        if "INFO:" in l:
             if "uuid:" in l:
-                uid = l.split("uuid:")[1].strip()
+                dmap = json.loads(l.split("INFO:")[1].strip())
+                uid = dmap['uuid']
                 day = l[:10]
                 dd = day_data.get(day,{})
                 uid_v_count = dd.get(uid,0)
