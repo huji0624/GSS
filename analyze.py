@@ -1,6 +1,19 @@
 import gzip
 import tarfile
 import os
+import requests
+
+def notify_msg(msg):
+    dd = "https://oapi.dingtalk.com/robot/send?access_token=7f13ddca04851c2ea19a80fd37bb2700fde430ee581524a82fe001a2e0ed8f30"
+    req = {}
+    req['msgtype'] = "text"
+    cont = {}
+    cont['text'] = msg
+    req['content'] = cont
+    import json
+    headers = {"content-type":"application/json;charset=utf-8"}
+    r = requests.post(dd,data=json.dumps(req),headers=headers)
+    print(r.json())
 
 def un_gz(file_name):
     f_name = file_name.replace(".gz", "")
@@ -44,6 +57,7 @@ with open(tfile,"r") as f:
 keys = day_data.keys()
 keys.sort()
 last_dd = None
+msgs = []
 for k in keys:
     if "-" not in k:
         continue
@@ -61,10 +75,12 @@ for k in keys:
         if last_dd is not None and d in last_dd:
             is_last_day_user = True
             last_day_user_cnt += 1
-        print("  "+ d + " : "+str(vt)+"v "+str(vt*10/60)+"min - is_last_day_user: "+str(is_last_day_user))
-    print("  total visit : "+str(visit_total))
-    print("  av visit : "+str(visit_total/len(dd)))
-    print("  one visit count : "+str(one_visit)+" valide user : "+str(len(dd)-one_visit))
+        msgs.append("  "+ d + " : "+str(vt)+"v "+str(vt*10/60)+"min - is_last_day_user: "+str(is_last_day_user))
+    msgs.append("  total visit : "+str(visit_total))
+    msgs.append("  av visit : "+str(visit_total/len(dd)))
+    msgs.append("  one visit count : "+str(one_visit)+" valide user : "+str(len(dd)-one_visit))
     if last_dd is not None:
-        print("  ratio of last day user %f" % (last_day_user_cnt/len(last_dd)))
+        msgs.append("  ratio of last day user %f" % (last_day_user_cnt/len(last_dd)))
     last_dd = dd
+
+notify_msg("\n".join(msgs))
