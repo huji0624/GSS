@@ -32,7 +32,7 @@ with open(tfile,"r") as f:
     lines = t.split("\n")
     for l in lines:
         if "INFO:" in l:
-            if "uuid:" in l:
+            if "uuid" in l:
                 dmap = json.loads(l.split("INFO:")[1].strip())
                 uid = dmap['uuid']
                 day = l[:10]

@@ -40,7 +40,7 @@ if not os.path.isdir("./log"):
 
 fn = str(arrow.now())
 fn = fn.replace(":","_")
-log_file_handler = TimedRotatingFileHandler(filename="./log/request.log", when="D", interval=7, backupCount=365)
+log_file_handler = TimedRotatingFileHandler(filename="./log/request.log", when="midnight", interval=1, backupCount=365)
 log_file_handler.suffix = "%Y-%m-%d_%H-%M.log"
 logger = logging.getLogger("request")
 logger.setLevel(logging.DEBUG)
@@ -474,7 +474,8 @@ class index(BaseRoute):
         li['uuid'] = psd['uuid']
         li['UA'] = web.ctx.env['HTTP_USER_AGENT']
         li['ip'] = web.ctx.ip
-        logger.info(li)
+        import json
+        logger.info(json.dumps(li))
         text = psd['t']
         ret = {}
         datas=[]
