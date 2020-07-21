@@ -278,6 +278,29 @@ def parse_sina_nf(l):
     obj['volume'] = tks[14]
     return get_one_from('nf', key, obj)
 
+#var hq_str_of180031="银华中小盘混合,3.49,5.27,3.457,0.95,2020-07-20";
+def parse_sina_of(l):
+    obj = {}
+    l = l.split("hq_str_of")[1]
+    tks = l.split("=\"")
+    code = tks[0].strip()
+    key = code + "@of"
+    l = tks[1].strip()
+    tks = l.split(",")
+    obj['name'] = tks[0]
+    obj['code'] = code
+    obj['key'] = key
+    obj['open'] = float(tks[3])
+    # obj['high'] = float(tks[3])
+    # obj['low'] = float(tks[4])
+    #[5]jie suan jia
+    obj['price'] = float(tks[1])
+    # obj['bp0'] = tks[6]
+    # obj['sp0'] = tks[7]
+    obj['pre_close'] = float(tks[3])
+    # obj['volume'] = tks[14]
+    return get_one_from('of', key, obj)
+
 def parse_sina_text(datas,text):
     lines = text.split("\n")
     base_info = {}
@@ -293,6 +316,8 @@ def parse_sina_text(datas,text):
             d = parse_cc(l)
         elif "hq_str_nf" in l:
             d = parse_sina_nf(l)
+        elif "hq_str_of" in l:
+            d = parse_sina_of(l)
         else:
             if "_i=" in l:
                 base_info = parse_sina_a_i(l)
