@@ -261,7 +261,7 @@ def parse_sina_nf(l):
     l = l.split("hq_str_nf_")[1]
     tks = l.split("=\"")
     code = tks[0].strip()
-    key = code + "@nf"
+    key = code.lower() + "@nf"
     l = tks[1].strip()
     tks = l.split(",")
     obj['name'] = tks[0]
@@ -279,6 +279,7 @@ def parse_sina_nf(l):
     return get_one_from('nf', key, obj)
 
 #var hq_str_of180031="银华中小盘混合,3.49,5.27,3.457,0.95,2020-07-20";
+#var hq_str_fu_180031="银华中小盘混合,10:50:00,3.4423,3.4070,5.1870,0.2329,1.0361,2020-07-28";
 def parse_sina_of(l):
     obj = {}
     l = l.split("hq_str_of")[1]
@@ -301,6 +302,26 @@ def parse_sina_of(l):
     # obj['volume'] = tks[14]
     return get_one_from('of', key, obj)
 
+#var hq_str_fu_180031="银华中小盘混合,10:50:00,3.4423,3.4070,5.1870,0.2329,1.0361,2020-07-28";
+def parse_sina_fu(l):
+    obj = {}
+    l = l.split("hq_str_fu_")[1]
+    tks = l.split("=\"")
+    code = tks[0].strip()
+    key = code + "@fu"
+    l = tks[1].strip()
+    tks = l.split(",")
+    if len(tks)<3:
+        return None
+    obj['name'] = tks[0]+"(实时)"
+    obj['code'] = code
+    obj['key'] = key
+    obj['open'] = float(tks[3])
+    obj['price'] = float(tks[2])
+    obj['pre_close'] = float(tks[3])
+    # obj['volume'] = tks[14]
+    return get_one_from('of', key, obj)
+
 def parse_sina_text(datas,text):
     lines = text.split("\n")
     base_info = {}
@@ -318,6 +339,8 @@ def parse_sina_text(datas,text):
             d = parse_sina_nf(l)
         elif "hq_str_of" in l:
             d = parse_sina_of(l)
+        elif "hq_str_fu" in l:
+            d = parse_sina_fu(l)
         elif "hq_str_sys_auth" in l:
             logger.error("parse_sina_text fail:"+l)
         else:

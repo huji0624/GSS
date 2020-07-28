@@ -45,6 +45,8 @@ class BaseHandler(tornado.web.RequestHandler):
         logger.info(json.dumps(li))
         ret = self._post(psd)
         self.write(json.dumps(ret))
+        print("dumps:")
+        print(ret)
 
 class IndexHandler(BaseHandler):
     def _post(self,psd):
