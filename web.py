@@ -22,6 +22,7 @@ logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
 log_file_handler.setFormatter(formatter)
 logger.addHandler(log_file_handler)
+gs.logger = logger
 
 web_all_data = {}
 
@@ -52,7 +53,10 @@ class IndexHandler(BaseHandler):
         ret = {}
         datas=[]
         gs.parse_sina_text(datas,text)
-        ret['datas'] = datas
+        if len(datas)==0:
+            ret['warning'] = "请求数据有误，请重制软件"
+        else:
+            ret['datas'] = datas
         # ret['warning'] = "免费版目前只支持一只股票"
         newversion = '''
         新版本v1.0.5发布.<a onclick="cm.open_url(\'https://luckyhu.top/gs\');" href="#">去下载</a>或

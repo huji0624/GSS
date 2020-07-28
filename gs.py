@@ -318,6 +318,8 @@ def parse_sina_text(datas,text):
             d = parse_sina_nf(l)
         elif "hq_str_of" in l:
             d = parse_sina_of(l)
+        elif "hq_str_sys_auth" in l:
+            logger.error("parse_sina_text fail:"+l)
         else:
             if "_i=" in l:
                 base_info = parse_sina_a_i(l)
@@ -325,7 +327,6 @@ def parse_sina_text(datas,text):
                 d = parse_sina_a(l, base_info)
         if d is not None:
             datas.append(d)
-        last_d = d
 
 def save_key_and_pop_old(web_all_data,now,k,d):
     rc = web_all_data.get(k, {})
