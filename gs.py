@@ -308,12 +308,12 @@ def parse_sina_fu(l):
     l = l.split("hq_str_fu_")[1]
     tks = l.split("=\"")
     code = tks[0].strip()
-    key = code + "@fu"
+    key = code + "@of"
     l = tks[1].strip()
     tks = l.split(",")
     if len(tks)<3:
         return None
-    obj['name'] = tks[0]+"(实时)"
+    obj['name'] = tks[0]+"(估价)"
     obj['code'] = code
     obj['key'] = key
     obj['open'] = float(tks[3])
@@ -339,6 +339,8 @@ def parse_sina_text(datas,text):
             d = parse_sina_nf(l)
         elif "hq_str_of" in l:
             d = parse_sina_of(l)
+            if len(datas)>0 and datas[-1]['code']==d['code']:
+                d = None
         elif "hq_str_fu" in l:
             d = parse_sina_fu(l)
         elif "hq_str_sys_auth" in l:
