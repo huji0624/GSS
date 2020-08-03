@@ -9,6 +9,7 @@ import os
 import base64
 from logging.handlers import TimedRotatingFileHandler
 import gs
+from tornado.web import StaticFileHandler
 
 if not os.path.isdir("./log"):
     os.mkdir("./log")
@@ -99,6 +100,7 @@ if __name__ == "__main__":
         (r"/", IndexHandler),
         (r"/chart", ChartHandler),
         (r"/update", UpdateHandler),
+        (r'/h5/(.*)', StaticFileHandler, dict(path=os.path.join(os.path.dirname(__file__), 'static/'), default_filename='index.html')),
     ])
     application.listen(8080)
     tornado.ioloop.IOLoop.current().start()
