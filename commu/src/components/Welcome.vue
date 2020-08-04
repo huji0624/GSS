@@ -11,7 +11,7 @@
       cell-style="text-align :center;">
       <el-table-column
         prop="name"
-        label="股票名">
+        label="名称">
       </el-table-column>
       <el-table-column
         prop="per"
