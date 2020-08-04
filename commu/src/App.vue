@@ -1,11 +1,7 @@
 <template>
   <div id="app">
     <!-- <Login/> -->
-    <el-image
-      style="width: 80px; height: 80px"
-      src="static/logo.png"
-      fit="fill"></el-image>
-    <h3>幽灵社区</h3>
+    <h3 style="margin:auto;">幽灵社区</h3>
     <el-container>
       <el-header><Topnavi v-on:tabtab="tabClick"/></el-header>
       <keep-alive>

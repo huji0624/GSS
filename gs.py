@@ -197,6 +197,9 @@ def parse_sina_a(l,base_info):
 #var hq_str_fx_susdcny="23:29:00,6.8671,6.8668,6.8771,257,6.8749,6.8817,6.856,6.8668,在岸人民币,-0.18,-0.0121,0.003738,Cougar Capital Management. New York,6.9762,6.5979,*+-++--+,2019-06-28";
 def parse_fx(l):
     left = l.split("hq_str_fx_s")[1].strip().split("=\"")
+    if len(left)<3:
+        logger.error("wrong text :"+l)
+        return None
     code = left[0]
     left = left[1].split(",")
     name = left[9]
@@ -312,6 +315,7 @@ def parse_sina_fu(l):
     l = tks[1].strip()
     tks = l.split(",")
     if len(tks)<3:
+        logger.error("wrong text :"+l)
         return None
     obj['name'] = tks[0]+"(估价)"
     obj['code'] = code
@@ -355,7 +359,7 @@ def parse_sina_text(datas,text):
 
 def save_key_and_pop_old(web_all_data,now,k,d):
     rc = web_all_data.get(k, {})
-    if (now - rc.get('last', 0)) > 10:
+    if (now - rc.get('last', 0)) > 15:
         rc['last'] = now
         his = rc.get('his', [])
         his.append(d)
@@ -363,7 +367,10 @@ def save_key_and_pop_old(web_all_data,now,k,d):
             his.pop(0)
         rc['his'] = his
         rc['quote'] = d
+        rc['hot'] = rc.get('hot',0) + 1
         web_all_data[k] = rc
+    if (now - rc.get('last', 0)) > 100:
+        rc['hot'] = rc.get('hot',0)/2
 
 def between_day_time(an,h1,m1,h2,m2):
     # print("is %s between %d:%d - %d:%d" % (str(an),h1,m1,h2,m2))

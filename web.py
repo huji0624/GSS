@@ -31,7 +31,15 @@ class BaseHandler(tornado.web.RequestHandler):
     def _get(self):
         pass
     def get(self):
-        self._get()
+        self.set_header("Access-Control-Allow-Origin", 'http://localhost:8081')
+        self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, DELETE, PUT')
+        self.set_header("Access-Control-Allow-Headers", "token, content-type, user-token")
+        self.set_header("Access-Control-Allow-Credentials", 'true')
+        ret = self._get()
+        self.write(json.dumps(ret))
+        print("dumps : "+self.request.path)
+        print(ret)
+
     def _post(self):
         pass
     def post(self):
@@ -93,6 +101,18 @@ class UpdateHandler(BaseHandler):
         else:
             return {"err":0}
 
+class HotHandler(BaseHandler):
+    def _get(self):
+        global web_all_data
+        ret = []
+        for k,v in web_all_data.items():
+            t = {}
+            t['hot'] = v['hot']
+            t['name'] = v['quote']['name']
+            t['per'] = v['quote']['per']
+            ret.append(t)
+        return ret
+
 if __name__ == "__main__":
     pid = (os.getpid())
     os.system("echo %d > pid.log" % pid)
@@ -100,6 +120,7 @@ if __name__ == "__main__":
         (r"/", IndexHandler),
         (r"/chart", ChartHandler),
         (r"/update", UpdateHandler),
+        (r"/hot", HotHandler),
         (r'/h5/(.*)', StaticFileHandler, dict(path=os.path.join(os.path.dirname(__file__), 'static/'), default_filename='index.html')),
     ])
     application.listen(8080)

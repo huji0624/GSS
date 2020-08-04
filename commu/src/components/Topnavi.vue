@@ -1,6 +1,6 @@
 <template>
 <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-  <el-menu-item index="Welcome">热门股票</el-menu-item>
+  <el-menu-item index="Welcome">热门标的</el-menu-item>
   <!-- <el-button type="success" @click="loginClick">登录</el-button> -->
 </el-menu>
 </template>
