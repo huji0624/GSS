@@ -284,6 +284,7 @@ def parse_sina_nf(l):
 #var hq_str_of180031="银华中小盘混合,3.49,5.27,3.457,0.95,2020-07-20";
 #var hq_str_fu_180031="银华中小盘混合,10:50:00,3.4423,3.4070,5.1870,0.2329,1.0361,2020-07-28";
 def parse_sina_of(l):
+    ol = l
     obj = {}
     l = l.split("hq_str_of")[1]
     tks = l.split("=\"")
@@ -292,7 +293,7 @@ def parse_sina_of(l):
     l = tks[1].strip()
     tks = l.split(",")
     if len(tks)<4:
-        logger.error("wrong text :"+l)
+        logger.error("wrong text :"+ol)
         return None
     obj['name'] = tks[0]
     obj['code'] = code
@@ -310,6 +311,7 @@ def parse_sina_of(l):
 
 #var hq_str_fu_180031="银华中小盘混合,10:50:00,3.4423,3.4070,5.1870,0.2329,1.0361,2020-07-28";
 def parse_sina_fu(l):
+    ol = l
     obj = {}
     l = l.split("hq_str_fu_")[1]
     tks = l.split("=\"")
@@ -318,7 +320,7 @@ def parse_sina_fu(l):
     l = tks[1].strip()
     tks = l.split(",")
     if len(tks)<3:
-        logger.error("wrong text :"+l)
+        logger.error("wrong text :"+ol)
         return None
     obj['name'] = tks[0]+"(估价)"
     obj['code'] = code
