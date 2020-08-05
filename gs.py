@@ -197,7 +197,7 @@ def parse_sina_a(l,base_info):
 #var hq_str_fx_susdcny="23:29:00,6.8671,6.8668,6.8771,257,6.8749,6.8817,6.856,6.8668,在岸人民币,-0.18,-0.0121,0.003738,Cougar Capital Management. New York,6.9762,6.5979,*+-++--+,2019-06-28";
 def parse_fx(l):
     left = l.split("hq_str_fx_s")[1].strip().split("=\"")
-    if len(left)<3:
+    if len(left)<2:
         logger.error("wrong text :"+l)
         return None
     code = left[0]
