@@ -332,8 +332,8 @@ def parse_sina_fu(l):
     return get_one_from('of', key, obj)
 
 def parse_sina_text(datas,text):
-    print("sina text:")
-    print(text)
+    # print("sina text:")
+    # print(text)
     lines = text.split("\n")
     base_info = {}
     for l in lines:
