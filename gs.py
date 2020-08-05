@@ -366,9 +366,9 @@ def parse_sina_text(datas,text):
         if d is not None:
             datas.append(d)
 
-def save_key_and_pop_old(web_all_data,now,k,d):
+def save_key_and_pop_old(web_all_data,dlt,k,d):
     rc = web_all_data.get(k, {})
-    if (now - rc.get('last', 0)) > 15:
+    if dlt > 15:
         his = rc.get('his', [])
         his.append(d)
         if (d['time']-his[0]['time'])>24*60*60:
@@ -377,13 +377,15 @@ def save_key_and_pop_old(web_all_data,now,k,d):
 
 def update_all_data(web_all_data,now,k,d):
     rc = web_all_data.get(k, {})
-    if (now - rc.get('last', 0)) > 15:
+    dlt = now - rc.get('last', 0)
+    if dlt > 15:
         rc['last'] = now
         rc['quote'] = d
         rc['hot'] = rc.get('hot',0) + 1
         web_all_data[k] = rc
-    if (now - rc.get('last', 0)) > 30:
-        rc['hot'] = rc.get('hot',0)/10*9
+    if dlt > 30:
+        rc['hot'] = rc.get('hot',0)/5*4
+    return dlt
 
 def between_day_time(an,h1,m1,h2,m2):
     # print("is %s between %d:%d - %d:%d" % (str(an),h1,m1,h2,m2))
@@ -404,21 +406,21 @@ def save_today_his(all_data,datas):
         d['time'] = now
         k = d['key']
         id, m = id_market_from_key(k)
-        update_all_data(all_data,now,k,d)
+        dlt = update_all_data(all_data,now,k,d)
         if m=="a":
             is_a_open = between_day_time(an, 9, 30, 11, 30) or between_day_time(an, 13, 0, 15, 0)
             if is_a_open:
-                save_key_and_pop_old(all_data,now,k,d)
+                save_key_and_pop_old(all_data,dlt,k,d)
         elif m=="hk":
             is_open = between_day_time(an,9,30,12,0) or between_day_time(an,13,0,16,0)
             if is_open:
-                save_key_and_pop_old(all_data,now, k, d)
+                save_key_and_pop_old(all_data,dlt, k, d)
         elif m=="nf":
             is_open = between_day_time(an,9,00,11,30) or between_day_time(an,13,30,15,0) or between_day_time(an,21,00,23,30)
             if is_open:
-                save_key_and_pop_old(all_data,now, k, d)
+                save_key_and_pop_old(all_data,dlt, k, d)
         else:
-            save_key_and_pop_old(all_data,now,k,d)
+            save_key_and_pop_old(all_data,dlt,k,d)
 
 def sort_ret(ret,sort):
     if sort!="":
