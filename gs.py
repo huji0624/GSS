@@ -369,12 +369,16 @@ def parse_sina_text(datas,text):
 def save_key_and_pop_old(web_all_data,now,k,d):
     rc = web_all_data.get(k, {})
     if (now - rc.get('last', 0)) > 15:
-        rc['last'] = now
         his = rc.get('his', [])
         his.append(d)
         if (d['time']-his[0]['time'])>24*60*60:
             his.pop(0)
         rc['his'] = his
+
+def update_all_data(web_all_data,now,k,d):
+    rc = web_all_data.get(k, {})
+    if (now - rc.get('last', 0)) > 15:
+        rc['last'] = now
         rc['quote'] = d
         rc['hot'] = rc.get('hot',0) + 1
         web_all_data[k] = rc
@@ -400,6 +404,7 @@ def save_today_his(all_data,datas):
         d['time'] = now
         k = d['key']
         id, m = id_market_from_key(k)
+        update_all_data(all_data,now,k,d)
         if m=="a":
             is_a_open = between_day_time(an, 9, 30, 11, 30) or between_day_time(an, 13, 0, 15, 0)
             if is_a_open:
