@@ -291,6 +291,9 @@ def parse_sina_of(l):
     key = code + "@of"
     l = tks[1].strip()
     tks = l.split(",")
+    if len(tks)<4:
+        logger.error("wrong text :"+l)
+        return None
     obj['name'] = tks[0]
     obj['code'] = code
     obj['key'] = key
