@@ -330,6 +330,8 @@ def parse_sina_fu(l):
     return get_one_from('of', key, obj)
 
 def parse_sina_text(datas,text):
+    print("sina text:")
+    print(text)
     lines = text.split("\n")
     base_info = {}
     for l in lines:
@@ -346,7 +348,9 @@ def parse_sina_text(datas,text):
             d = parse_sina_nf(l)
         elif "hq_str_of" in l:
             d = parse_sina_of(l)
-            if len(datas)>0 and datas[-1]['code']==d['code']:
+            if d is None:
+                pass
+            elif len(datas)>0 and datas[-1]['code']==d['code']:
                 d = None
         elif "hq_str_fu" in l:
             d = parse_sina_fu(l)
