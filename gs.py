@@ -384,7 +384,8 @@ def update_all_data(web_all_data,now,k,d):
         rc['hot'] = rc.get('hot',0) + 1
         web_all_data[k] = rc
     if dlt > 30:
-        rc['hot'] = rc.get('hot',0)/5*4
+        import math
+        rc['hot'] = math.floor(rc.get('hot',0)/5*4*10)/10
     return dlt
 
 def between_day_time(an,h1,m1,h2,m2):
