@@ -383,8 +383,11 @@ def update_all_data(web_all_data,now,k,d):
         rc['quote'] = d
         rc['hot'] = rc.get('hot',0) + 1
         web_all_data[k] = rc
+    dlt_hot = now - rc.get('last_cuthot', 0)
+    if dlt_hot > 30:
         import math
-        rc['hot'] = math.floor(rc.get('hot',0)/10*9*10)/10
+        rc['hot'] = math.floor(rc.get('hot',0)/5*4*10)/10
+        rc['last_cuthot'] = now
     return dlt
 
 def between_day_time(an,h1,m1,h2,m2):
