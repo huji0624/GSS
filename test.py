@@ -38,55 +38,15 @@
 
 # print(datas)
 
-class Solution(object):
-    def prisonAfterNDays(self, cells, N):
-        """
-        :type cells: List[int]
-        :type N: int
-        :rtype: List[int]
-        """
-        nmap = {}
-        s = str(cells)
-        nmap[s] = N
-        while N>0:
-            nc = []
-            nc.append(0)
-            if cells[0]==cells[2]:
-                nc.append(1)
-            else:
-                nc.append(0)
-            if cells[1]==cells[3]:
-                nc.append(1)
-            else:
-                nc.append(0)
-            if cells[2]==cells[4]:
-                nc.append(1)
-            else:
-                nc.append(0)
-            if cells[3]==cells[5]:
-                nc.append(1)
-            else:
-                nc.append(0)
-            if cells[4]==cells[6]:
-                nc.append(1)
-            else:
-                nc.append(0)
-            if cells[5]==cells[7]:
-                nc.append(1)
-            else:
-                nc.append(0)
-            nc.append(0)
-            N = N-1
-            cells = nc
-            ss=str(cells)
-            last = nmap.get(ss,0)
-            if last!=0:
-                count = last - N
-                N = N%count
-                print(ss)
-                print(N)
-            else:
-                nmap[ss]=N
-        return cells
+t = 0
 
-Solution().prisonAfterNDays([1,0,0,1,0,0,1,0],1000000000)
+hot = 0
+last = 0
+
+while True:
+    hot = hot + 2
+    t = t + 1
+    if t-last>15:
+        hot = hot/10*9
+        last = t
+    print(hot)

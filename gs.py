@@ -378,16 +378,13 @@ def save_key_and_pop_old(web_all_data,dlt,k,d):
 def update_all_data(web_all_data,now,k,d):
     rc = web_all_data.get(k, {})
     dlt = now - rc.get('last', 0)
+    rc['hot'] = rc.get('hot',0) + 1
     if dlt > 15:
         rc['last'] = now
         rc['quote'] = d
-        rc['hot'] = rc.get('hot',0) + 1
         web_all_data[k] = rc
-    dlt_hot = now - rc.get('last_cuthot', 0)
-    if dlt_hot > 30:
         import math
-        rc['hot'] = math.floor(rc.get('hot',0)/5*4*10)/10
-        rc['last_cuthot'] = now
+        rc['hot'] = math.floor(rc.get('hot',0)/10*9*10)/10
     return dlt
 
 def between_day_time(an,h1,m1,h2,m2):
