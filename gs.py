@@ -198,7 +198,7 @@ def parse_sina_a(l,base_info):
 def parse_fx(l):
     left = l.split("hq_str_fx_s")[1].strip().split("=\"")
     if len(left)<2:
-        logger.error("wrong text :"+l)
+        logger.error("wrong parse_fx :"+l)
         return None
     code = left[0]
     left = left[1].split(",")
@@ -253,6 +253,9 @@ def parse_sina_a_i(l):
     code = tks[0].strip()
     l = tks[1]
     tks = l[:-2].split(",")
+    if len(tks)<9:
+        logger.error("wrong parse_sina_a_i :"+l)
+        return None
     ltg = tks[8].strip()
     if ltg!="":
         base_info['ltg']=ltg
@@ -293,7 +296,7 @@ def parse_sina_of(l):
     l = tks[1].strip()
     tks = l.split(",")
     if len(tks)<4:
-        logger.error("wrong text :"+ol)
+        logger.error("wrong parse_sina_of :"+ol)
         return None
     obj['name'] = tks[0]
     obj['code'] = code
@@ -320,7 +323,7 @@ def parse_sina_fu(l):
     l = tks[1].strip()
     tks = l.split(",")
     if len(tks)<3:
-        logger.error("wrong text :"+ol)
+        logger.error("wrong parse_sina_fu :"+ol)
         return None
     obj['name'] = tks[0]+"(估价)"
     obj['code'] = code
@@ -425,9 +428,12 @@ def save_today_his(all_data,datas):
 def sort_ret(ret,sort):
     if sort!="":
         tks = sort.split("#")
-        dts = ret['datas']
-        k = tks[0] + "_v"
-        od = tks[1]
-        s_dts = sorted(dts,key=lambda x:x[k],reverse=(od=="desc"))
-        ret['datas'] = s_dts
+        dts = ret.get('datas',None)
+        if dts is not None:
+            k = tks[0] + "_v"
+            od = tks[1]
+            s_dts = sorted(dts,key=lambda x:x[k],reverse=(od=="desc"))
+            ret['datas'] = s_dts
+        else:
+            logger.error("sort wrong :"+str(ret))
     ret['sort'] = sort
