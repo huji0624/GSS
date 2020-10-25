@@ -111,10 +111,10 @@ class index(BaseRoute):
         ret['datas'] = datas
         # ret['warning'] = "免费版目前只支持一只股票"
         newversion = '''
-        新版本v1.0.4发布.<a onclick="cm.open_url(\'https://luckyhu.top/gs\');" href="#">去下载</a>或
+        新版本v1.1.1发布.<a onclick="cm.open_url(\'https://luckyhu.top/gs\');" href="#">去下载</a>或
         <a onclick="$(\'#warnalert\').remove();ret_window_height();" href="#">忽略</a>
         '''
-        if psd['v']!="1.0.4":
+        if psd['v']!="1.1.1":
             ret['warning'] = newversion
         # print(ret)
         save_today_his(datas)
