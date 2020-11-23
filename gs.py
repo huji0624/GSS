@@ -81,7 +81,7 @@ def get_one_from(m,one,it):
     if pcl>0:
         per_v = (prc-pcl)/pcl*100
     else:
-        logger.error("wrong get one :",json.dumps(it))
+        logger.error("wrong get one :"+json.dumps(it))
     ret['per'] = "%.2f%%" % (per_v)
     ret['per_v'] = per_v
     return ret
