@@ -1,1 +1,1 @@
-ssh huji@47.100.235.205 'cd GSS;git pull;kill `cat pid.log`;nohup /home/huji/anaconda3/bin/python3 web.py > http.log 2>&1 &'
+ssh root@yun 'cd GSS;kill `cat pid.log`;nohup /home/huji/anaconda3/bin/python3 web.py > http.log 2>&1 &'
