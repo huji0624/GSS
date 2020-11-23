@@ -1,5 +1,6 @@
 #coding=utf-8
 import arrow
+import json
 
 def id_market_from_key(key):
     pair = key.split("@")
@@ -76,7 +77,11 @@ def get_one_from(m,one,it):
 
     prc = float(ret['price'])
     pcl = float(it['pre_close'])
-    per_v = (prc-pcl)/pcl*100
+    per_v = 0
+    if pcl>0:
+        per_v = (prc-pcl)/pcl*100
+    else:
+        logger.error("wrong get one :",json.dumps(it))
     ret['per'] = "%.2f%%" % (per_v)
     ret['per_v'] = per_v
     return ret
