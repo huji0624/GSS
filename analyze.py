@@ -40,15 +40,18 @@ import json
 import os
 import arrow
 
+days = 10
+
 logfiles = os.listdir("log")
 # logfiles = ["request.log.2020-12-01_00-00.log","request.log.2020-07-21_00-00.log","request.log.2020-11-27_00-00.log","request.log.2020-11-23_00-00.log",]
 
 logfiles = sorted(logfiles)
-logfiles = logfiles[-7:]
+logfiles = logfiles[-days:]
 logfiles.reverse()
 msgs = []
 msgs.append("Daily Report:")
 datas = {}
+uuids = set()
 
 for tfile in logfiles:
     day_data = {}
@@ -64,6 +67,7 @@ for tfile in logfiles:
                     day = l[:10]
                     dmap['day'] = day
                     day_data[uid] = (dmap)
+                    uuids.add(uid)
     windows_count = 0
     for uid in day_data:
         it = day_data[uid]
@@ -86,6 +90,7 @@ for tfile in logfiles:
     msgs.append(mstr)
     datas[day] = day_data
 
+msgs.append("%d天活跃UV:%d" % (days,len(uuids)))
 
 msg = "\n".join(msgs)
 # print(msg)
