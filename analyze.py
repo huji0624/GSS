@@ -40,7 +40,7 @@ import json
 import os
 import arrow
 
-days = 10
+days = 4
 
 logfiles = os.listdir("log")
 # logfiles = ["request.log.2020-12-01_00-00.log","request.log.2020-07-21_00-00.log","request.log.2020-11-27_00-00.log","request.log.2020-11-23_00-00.log",]
