@@ -57,9 +57,10 @@ for tfile in logfiles:
     day_data = {}
     day = None
     with open("log/"+tfile,"r") as f:
-        t = f.read()
-        lines = t.split("\n")
-        for l in lines:
+        while True:
+            l = f.readline()
+            if len(l)==0:
+                break
             if "INFO:" in l:
                 if "uuid" in l:
                     dmap = json.loads(l.split("INFO:")[1].strip())
@@ -68,6 +69,7 @@ for tfile in logfiles:
                     dmap['day'] = day
                     day_data[uid] = (dmap)
                     uuids.add(uid)
+            
     windows_count = 0
     for uid in day_data:
         it = day_data[uid]
@@ -93,6 +95,6 @@ for tfile in logfiles:
 msgs.append("%d天活跃UV:%d" % (days,len(uuids)))
 
 msg = "\n".join(msgs)
-# print(msg)
+print(msg)
 # exit(1)
-notify_msg(msg)
+# notify_msg(msg)
