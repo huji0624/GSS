@@ -28,7 +28,7 @@ if not os.path.isdir("./datas"):
 g_open_file = None
 
 async def send_pong(websocket):
-    print("Send Pong...")
+    print("Send Pong..."+str(arrow.now()))
     await websocket.pong()
 
 def new_file():
@@ -47,6 +47,7 @@ async def recv(websocket):
         res = await websocket.recv()
         res = json.loads(res)
         now = time.time()
+        res['lt'] = now #localtime
         if now - last_ts > 3*60:
             last_ts = now
             await send_pong(websocket)
