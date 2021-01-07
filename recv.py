@@ -65,6 +65,8 @@ async def main():
             print(e)
         except websockets.exceptions.ConnectionClosedError as e:
             print(e)
+        except websockets.exceptions.WebSocketException as e:
+            print(e)
         else:
             continue
 
