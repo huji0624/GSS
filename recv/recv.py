@@ -43,6 +43,7 @@ async def recv(websocket):
     new_file()
 
     last_ts = 0
+    last_nf = time.time()
     while True:
         res = await websocket.recv()
         res = json.loads(res)
@@ -52,9 +53,12 @@ async def recv(websocket):
             last_ts = now
             await send_pong(websocket)
         g_open_file.write(json.dumps(res)+"\n")
+        if now - last_nf > 60*60*6:
+            last_nf = now
+            new_file()
 
 async def main():
-    uri = "wss://stream.binance.com:9443/stream?streams=btcusdt@aggTrade/btcusdt@depth"
+    uri = "wss://stream.binance.com:9443/stream"
     while True:
         await asyncio.sleep(1)
         try:
