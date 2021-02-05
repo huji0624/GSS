@@ -14,12 +14,10 @@ import os
 subs = {
     "method": "SUBSCRIBE",
     "params":[
-        "btcusdt@aggTrade",
-        "btcusdt@depth",
-        "xrpusdt@aggTrade",
-        "xrpusdt@depth",
-        "ethusdt@aggTrade",
-        "ethusdt@depth"
+        "btcusdt@trade",
+        "btcusdt@depth20",
+        "ethusdt@trade",
+        "ethusdt@depth20"
     ],"id": 1
 }
 
