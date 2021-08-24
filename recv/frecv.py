@@ -14,8 +14,6 @@ import os
 subs = {
     "method": "SUBSCRIBE",
     "params":[
-        "btcusdt@trade",
-        "btcusdt@depth20",
         "sfpusdt@trade",
         "sfpusdt@depth20"
     ],"id": 1
@@ -33,7 +31,7 @@ def new_file():
     global g_open_file
     if g_open_file is not None:
         g_open_file.close()
-    fn = arrow.utcnow().format('YYYY_MM_DD_HH_mm_ss') + ".data"
+    fn = arrow.utcnow().format('YYYY_MM_DD_HH_mm_ss') + ".fdata"
     fp = "datas/"+fn
     g_open_file = open(fp,"a")
 
@@ -56,7 +54,7 @@ async def recv(websocket):
             new_file()
 
 async def main():
-    uri = "wss://stream.binance.com:9443/stream"
+    uri = "wss://fstream.binance.com/stream"
     while True:
         await asyncio.sleep(1)
         try:
