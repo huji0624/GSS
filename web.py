@@ -65,15 +65,16 @@ class IndexHandler(BaseHandler):
         datas=[]
         gs.parse_sina_text(datas,text)
         if len(datas)==0:
-            ret['warning'] = "请求数据有误，请重制软件"
+            logger.error(text)
+            ret['warning'] = "请求数据有误，请重置软件"
         else:
             ret['datas'] = datas
         # ret['warning'] = "免费版目前只支持一只股票"
         newversion = '''
-        新版本v1.1.1发布.<a onclick="cm.open_url(\'https://luckyhu.top/gs\');" href="#">去下载</a>或
+        新版本v1.1.2发布.<a onclick="cm.open_url(\'https://luckyhu.top/gs\');" href="#">去下载</a>或
         <a onclick="$(\'#warnalert\').remove();ret_window_height();" href="#">忽略</a>
         '''
-        if psd['v']!="1.1.1":
+        if psd['v']!="1.1.2":
             ret['warning'] = newversion
         # print(ret)
         gs.save_today_his(web_all_data,datas)
