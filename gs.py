@@ -359,13 +359,19 @@ def parse_sina_text(datas,text):
             d = parse_cc(l)
         elif "hq_str_nf" in l:
             d = parse_sina_nf(l)
-        elif "hq_str_of" in l:
+        elif "hq_str_of" in l and '""' not in l:
             d = parse_sina_of(l)
             if d is None:
                 pass
             elif len(datas)>0 and datas[-1]['code']==d['code']:
                 d = None
-        elif "hq_str_fu" in l:
+        elif "hq_str_f" in l and '""' not in l:
+            d = parse_sina_of(l)
+            if d is None:
+                pass
+            elif len(datas)>0 and datas[-1]['code']==d['code']:
+                d = None
+        elif "hq_str_fu" in l and '""' not in l:
             d = parse_sina_fu(l)
         elif "hq_str_sys_auth" in l:
             logger.error("parse_sina_text fail:"+l)
