@@ -345,6 +345,7 @@ def parse_sina_fu(l):
     # obj['volume'] = tks[14]
     return get_one_from('of', key, obj)
 
+#var hq_str_fu_16172d="";
 def parse_sina_text(datas,text):
     # print("sina text:")
     # print(text)
@@ -352,6 +353,9 @@ def parse_sina_text(datas,text):
     base_info = {}
     for l in lines:
         if len(l.strip())==0:
+            continue
+        if l.strip().endswith('="";'):
+            logger.warning("empty data:"+l)
             continue
         d = None
         if "hq_str_rt_hk" in l:
