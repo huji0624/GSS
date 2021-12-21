@@ -122,7 +122,7 @@ if __name__ == "__main__":
         (r"/chart", ChartHandler),
         (r"/update", UpdateHandler),
         (r"/hot", HotHandler),
-        (r'/h5/(.*)', StaticFileHandler, dict(path=os.path.join(os.path.dirname(__file__), 'static/'), default_filename='index.html')),
+        (r'/h5/(.*)', StaticFileHandler, dict(path=os.path.join(os.path.dirname(__file__), 'commu/dist/'), default_filename='index.html')),
     ])
     application.listen(8080)
     tornado.ioloop.IOLoop.current().start()

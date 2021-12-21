@@ -11,7 +11,7 @@ console.log(process.env.NODE_ENV)
 if(process.env.NODE_ENV==="development"){
   axios.defaults.baseURL = 'http://localhost:8080';
 }else{
-  axios.defaults.baseURL = 'http://static.luckyhu.top:8080';
+  axios.defaults.baseURL = 'http://api.guyu.biz:8080';
 }
 axios.defaults.withCredentials = true; // 允许携带cookie
 
