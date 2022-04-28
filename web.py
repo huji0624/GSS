@@ -59,24 +59,37 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class IndexHandler(BaseHandler):
     def _post(self,psd):
+        ret = {}
+
+        sc = 1
+
+        # mc的意思是major config.配置是否购买会员相关的信息
+        mc = {}
+        mc["freq"] = 3000  # 请求频率
+        mc["sc"] = sc  # 可请求的股票数量
+        ret['mc'] = mc
+
         global web_all_data
         text = psd['t']
-        ret = {}
         datas=[]
         gs.parse_sina_text(datas,text)
         if len(datas)==0:
             logger.error(text)
             ret['warning'] = "请求数据有误，请重置软件"
         else:
+            if sc==1:
+                datas = datas[:sc]
+                ret['warning'] = '''
+                免费版目前只支持一只股票。请在设置页面购买会员。<a onclick="$(\'#warnalert\').remove();ret_window_height();" href="#">忽略</a>
+                '''
+                # "免费版目前只支持一只股票"
             ret['datas'] = datas
-        # ret['warning'] = "免费版目前只支持一只股票"
         newversion = '''
         新版本v1.1.2发布.<a onclick="cm.open_url(\'https://luckyhu.top/gs\');" href="#">去下载</a>或
         <a onclick="$(\'#warnalert\').remove();ret_window_height();" href="#">忽略</a>
         '''
         if psd['v']!="1.1.2":
             ret['warning'] = newversion
-        # print(ret)
         gs.save_today_his(web_all_data,datas)
         gs.sort_ret(ret,psd.get('sort',''))
         return ret
