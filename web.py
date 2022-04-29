@@ -131,11 +131,11 @@ if __name__ == "__main__":
     pid = (os.getpid())
     os.system("echo %d > pid.log" % pid)
     application = tornado.web.Application([
-        (r"/", IndexHandler),
+        (r"/stock/index", IndexHandler),
         (r"/chart", ChartHandler),
         (r"/update", UpdateHandler),
         (r"/hot", HotHandler),
         (r'/h5/(.*)', StaticFileHandler, dict(path=os.path.join(os.path.dirname(__file__), 'commu/dist/'), default_filename='index.html')),
     ])
-    application.listen(8080)
+    application.listen(8082)
     tornado.ioloop.IOLoop.current().start()
